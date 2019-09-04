@@ -8,7 +8,7 @@ public class Node
 
     //H stands for ammount of nodes to move
     //G stands for the acumulated move cost
-    private int posX, posY;
+    public int posX, posY;
     public double gValue, hValue, fValue;
 
     public Node parent;

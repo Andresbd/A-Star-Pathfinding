@@ -48,6 +48,23 @@ public class Board : MonoBehaviour
 
         List<Node> neighbours = new List<Node>();
 
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) {
+                    continue;
+                }
+
+                int checkX = n.posX + x;
+                int checkY = n.posY + y;
+
+                if(checkX >= 0 && checkX < 50 && checkY >= 0 && checkY < 50)
+                {
+                    neighbours.Add(grid[checkX, checkY]);
+                }
+            }
+        }
+
         return neighbours;
     }
 }
