@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Node
 {
-    private bool isWall;
+    public bool isWall;
 
     //H stands for ammount of nodes to move
     //G stands for the acumulated move cost
@@ -19,27 +19,28 @@ public class Node
         posY = py;
         isWall = wall;
 
-        double addGScore(Node parent, float moveCost) {
+    }
 
-            return parent.gValue + moveCost;
-        }
+    public double addGScore(Node parent, float moveCost)
+    {
 
-        double addHscore(Node goal) {
+        return parent.gValue + moveCost;
+    }
 
-            double hAdded = 1;
+    public double addHscore(Node goal)
+    {
+        double distanceX = Mathf.Abs(posX - goal.posX);
+        double distanceY = Mathf.Abs(posY - goal.posY);
+        double sumDis = distanceX + distanceY;
+        double resDis = distanceX - distanceY;
+        double diagonal = (1.414 - 2) * 1;
 
-            double distanceX = Mathf.Abs(posX - goal.posX);
-            double distanceY = Mathf.Abs(posY - goal.posY);
-            double sumDis = distanceX + distanceY;
-            double resDis = distanceX - distanceY;
-            double diagonal = (1.414 - 2) * 1;
+        return 1 * sumDis + diagonal * resDis;
+    }
 
-            return 1 * sumDis + diagonal * resDis;
-        }
+    public double addFScore(double g, double h)
+    {
 
-        double addFScore(double g, double h) {
-
-            return g + h;
-        }
+        return g + h;
     }
 }
