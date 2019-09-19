@@ -1,9 +1,9 @@
 ﻿<Properties StartupConfiguration="{DE987E40-65FE-E2B3-2FD3-3E21FA77764D}|">
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Node.cs">
     <Files>
-      <File FileName="Assets/Scripts/Board.cs" Line="17" Column="17" />
-      <File FileName="Assets/Scripts/AStarPathfinding.cs" Line="8" Column="21" />
-      <File FileName="Assets/Scripts/Node.cs" Line="7" Column="5" />
+      <File FileName="Assets/Scripts/Board.cs" Line="22" Column="1" />
+      <File FileName="Assets/Scripts/AStarPathfinding.cs" Line="48" Column="69" />
+      <File FileName="Assets/Scripts/Node.cs" Line="28" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,7 +21,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="f6841f77-2408-47d0-8e7e-cdbb50923c5c" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="7d739a66-e652-4c5c-b69c-85dac0b526d6" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
