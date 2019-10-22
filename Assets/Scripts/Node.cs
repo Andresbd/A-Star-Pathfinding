@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Node
 {
-    public bool isWall, playerHere;
+    public bool isWall, iscar;
 
     //H stands for ammount of nodes to move
     //G stands for the acumulated move cost

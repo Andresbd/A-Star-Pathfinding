@@ -10,22 +10,27 @@ public class AStarPathfinding : MonoBehaviour
 {
     public List<Node> Open;
     public List<Node> Closed;
+    public List<Node> Path;
     public Node startNode;
+    public Node current, actual, next;
+    public bool nextMove, readyMove;
     
-    public Node current;
-    public GameObject red;
-    private int randomStart, randomGoal;
+    public GameObject car, red;
+    private int randomStart, randomGoal, cont, index, pos;
     Board b;
 
 
     void Start()
     {
+        cont = 90;
 
-        Open = new List<Node>();
-        Closed = new List<Node>();
-        b = FindObjectOfType<Board>();
+        PrepareLists();
 
         spawnPlayer();
+
+        SetGoal();
+
+        pos = 1;
 
         transform.position = new Vector3(randomStart, 1, 0);
 
@@ -39,21 +44,58 @@ public class AStarPathfinding : MonoBehaviour
 
     }
 
+    void Update() {
+        if(cont <= 0) {
+            actual = b.grid[Path[pos].posX,Path[pos].posY];
+            next = b.grid[Path[pos+1].posX,Path[pos+1].posY];
+            readyMove = CheckNext();
+            if(readyMove) {
+                readyMove = false;
+                actual.iscar = false;
+                next.iscar = true;
+                transform.position = new Vector3(Path[pos].posX,1,Path[pos].posY);
+                pos++;
+                cont = 90;
+            }
+        }else {
+            cont--;
+        }
+    }
+
+    bool CheckNext() {
+
+        if(next.iscar == true || next.isWall == true) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    void PrepareLists() {
+
+        Open = new List<Node>();
+        Closed = new List<Node>();
+        b = FindObjectOfType<Board>();
+    }
+
     void spawnPlayer() {
 
         randomStart = Random.Range(0, 50);
 
         startNode = b.grid[randomStart, 0];
 
-        if (startNode.isWall == true || startNode.playerHere == true)
+        if (startNode.isWall == true || startNode.iscar == true)
         {
             spawnPlayer();
         }
 
-        startNode.playerHere = true;
+        startNode.iscar = true;
+
     }
 
-    
+    void SetGoal() {
+
+    }
 
     void PathFinding(Node goal) {
 
@@ -65,7 +107,6 @@ public class AStarPathfinding : MonoBehaviour
 
             if (current == b.goalNode)
             {
-                Debug.Log("Camino Encontrado");
                 construct_path(current);
             }
 
@@ -74,7 +115,7 @@ public class AStarPathfinding : MonoBehaviour
 
             foreach (Node neighbour in b.FindNeighbours(current)) {
 
-                if (neighbour.isWall || Closed.Contains(neighbour) || neighbour.playerHere) {
+                if (neighbour.isWall || Closed.Contains(neighbour)) {
                     
                     continue;
                 }
@@ -95,20 +136,18 @@ public class AStarPathfinding : MonoBehaviour
 
     void construct_path(Node endNode) {
 
-        List<Node> path = new List<Node>();
+        Path = new List<Node>();
         Node currentNode = endNode;
 
         while (currentNode != startNode)
         {
-            Instantiate(red, new Vector3(currentNode.posX, 1, currentNode.posY), Quaternion.identity);
-            path.Add(currentNode);
+            Path.Add(currentNode);
             currentNode = currentNode.parent;
-            currentNode.playerHere = true;
         }
 
-        path.Reverse();
+        Path.Reverse();
 
-        b.path = path;
+        b.path = Path;
     }
 
     double GetDistance(Node nodeA, Node nodeB)
