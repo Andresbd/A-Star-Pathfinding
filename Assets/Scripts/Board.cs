@@ -9,6 +9,7 @@ public class Board : MonoBehaviour
     public int cont, randomGoal;
     public Node goalNode;
     public List<Node> path;
+    private Material mMat;
     // Start is called before the first frame update
     void Awake()
     {
@@ -46,6 +47,7 @@ public class Board : MonoBehaviour
             }
         }
         spawnGoal();
+        
     }
 
     public List<Node> FindNeighbours(Node n) {

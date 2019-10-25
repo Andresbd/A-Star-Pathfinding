@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Node
 {
-    public bool isWall, iscar;
+    public bool isWall, iscar, isTrafficLight;
 
     //H stands for ammount of nodes to move
     //G stands for the acumulated move cost

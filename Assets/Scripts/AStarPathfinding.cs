@@ -11,60 +11,72 @@ public class AStarPathfinding : MonoBehaviour
     public List<Node> Open;
     public List<Node> Closed;
     public List<Node> Path;
-    public Node startNode;
+    public Node startNode, gNode;
     public Node current, actual, next;
-    public bool nextMove, readyMove;
+    public bool readyMove, nSpawn, go;
     
     public GameObject car, red;
     private int randomStart, randomGoal, cont, index, pos;
-    Board b;
+    TrafficBoard b;
 
-
-    void Start()
-    {
-        cont = 90;
-
-        PrepareLists();
-
-        spawnPlayer();
-
-        SetGoal();
+    public void GenerateCar() {
+        cont = 60;
 
         pos = 1;
 
-        transform.position = new Vector3(randomStart, 1, 0);
+        PrepareLists();
+        spawnPlayer();
+        SetGoal();
 
         Open.Add(startNode);
 
         startNode.gValue = 0;
-        startNode.hValue = startNode.addHscore(b.goalNode);
+        startNode.hValue = 0;
+        startNode.fValue = 0;
+        startNode.hValue = startNode.addHscore(gNode);
         startNode.fValue = startNode.addFScore(startNode.gValue, startNode.hValue);
 
-        PathFinding(b.goalNode);
+        PathFinding(gNode);
 
+        go = true;
     }
 
-    void Update() {
-        if(cont <= 0) {
-            actual = b.grid[Path[pos].posX,Path[pos].posY];
-            next = b.grid[Path[pos+1].posX,Path[pos+1].posY];
-            readyMove = CheckNext();
-            if(readyMove) {
-                readyMove = false;
-                actual.iscar = false;
-                next.iscar = true;
-                transform.position = new Vector3(Path[pos].posX,1,Path[pos].posY);
-                pos++;
-                cont = 90;
+    void FixedUpdate() {
+        if(go) {
+            if(cont <= 0) {
+                actual = b.grid[Path[pos].posX,Path[pos].posY];
+                next = b.grid[Path[pos+1].posX,Path[pos+1].posY];
+                if(next == gNode) {
+                    if(nSpawn) {
+                        b.nCars--;
+                        actual.iscar = false;
+                        next.iscar = false;
+                        Destroy(gameObject);
+                    }else {
+                        b.wCars--;
+                        actual.iscar = false;
+                        next.iscar = false;
+                        Destroy(gameObject);
+                    }
+                }
+                readyMove = CheckNext();
+                if(readyMove) {
+                    readyMove = false;
+                    actual.iscar = false;
+                    next.iscar = true;
+                    transform.position = new Vector3(Path[pos].posX,1,Path[pos].posY);
+                    pos++;
+                    cont = 60;
+                }
+            }else {
+                cont--;
             }
-        }else {
-            cont--;
         }
     }
 
     bool CheckNext() {
 
-        if(next.iscar == true || next.isWall == true) {
+        if(next.iscar == true || next.isTrafficLight == true || actual.isWall == true) {
             return false;
         }else {
             return true;
@@ -72,40 +84,82 @@ public class AStarPathfinding : MonoBehaviour
     }
 
     void PrepareLists() {
-
+        b = FindObjectOfType<TrafficBoard>();
         Open = new List<Node>();
         Closed = new List<Node>();
-        b = FindObjectOfType<Board>();
     }
 
     void spawnPlayer() {
 
-        randomStart = Random.Range(0, 50);
+        startNode = null;
 
-        startNode = b.grid[randomStart, 0];
+        if(nSpawn) {
 
-        if (startNode.isWall == true || startNode.iscar == true)
-        {
-            spawnPlayer();
+            randomStart = Random.Range(40, 59);
+
+            startNode = b.grid[randomStart,99];
+
+            transform.position = new Vector3(randomStart,1,99);
+
+            if (startNode.isWall == true || startNode.iscar == true)
+            {
+                spawnPlayer();
+            }
+
+            b.nCars++;
+
+        }else {
+            
+            randomStart = Random.Range(40, 59);
+
+            startNode = b.grid[0,randomStart];
+
+            transform.position = new Vector3(0,1,randomStart);
+
+            if (startNode.isWall == true || startNode.iscar == true)
+            {
+                spawnPlayer();
+            }
+
+            b.wCars++;
         }
-
-        startNode.iscar = true;
-
     }
 
     void SetGoal() {
+        gNode = null;
 
+        if(nSpawn) {
+            int dirRan = Random.Range(0,2);
+            if(dirRan == 1) {
+                //40,0 - 59,0
+                int gPos = Random.Range(40,59);
+                gNode = b.grid[gPos,0];
+            }else {
+                int gPos = Random.Range(40,59);
+                gNode = b.grid[98,gPos];
+            }
+        }else {
+            int dirRan = Random.Range(0,2);
+            if(dirRan == 1) {
+                //40,0 - 59,0
+                int gPos = Random.Range(40,59);
+                gNode = b.grid[98,gPos];
+            }else {
+                int gPos = Random.Range(40,59);
+                gNode = b.grid[gPos,0];
+            }
+        }
     }
 
     void PathFinding(Node goal) {
 
         while (Open.Count != 0)
         {
-            double tempMin = 10000;
+            double tempMin = 1000;
 
             Open.ForEach((n) => { if (tempMin > n.fValue) { tempMin = n.fValue; current = n; } });
 
-            if (current == b.goalNode)
+            if (current == gNode)
             {
                 construct_path(current);
             }
@@ -116,7 +170,6 @@ public class AStarPathfinding : MonoBehaviour
             foreach (Node neighbour in b.FindNeighbours(current)) {
 
                 if (neighbour.isWall || Closed.Contains(neighbour)) {
-                    
                     continue;
                 }
 
@@ -124,7 +177,7 @@ public class AStarPathfinding : MonoBehaviour
                 if (gCalculated < neighbour.gValue || !Open.Contains(neighbour))
                 {
                     neighbour.gValue = gCalculated;
-                    neighbour.hValue = GetDistance(neighbour, b.goalNode);
+                    neighbour.hValue = GetDistance(neighbour, gNode);
                     neighbour.parent = current;
 
                     if (!Open.Contains(neighbour))
