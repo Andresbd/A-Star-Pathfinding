@@ -27,7 +27,8 @@ public class TrafficBoard : MonoBehaviour
                 if(i <= 40 && j > 39 && j < 60) {
                     white = Instantiate(white, new Vector3(i,0,j),Quaternion.identity);
                     grid[i,j] = new Node(false,i,j);
-                    if(i == 39 && j >= 40 && j <= 59) {
+                    grid[i, j].reward = -0.4f;
+                    if (i == 39 && j >= 40 && j <= 59) {
                         WE[wCount] = white;
                         consult[cCount] = grid[i,j];
                         wCount++;
@@ -36,7 +37,8 @@ public class TrafficBoard : MonoBehaviour
                 }else if(i > 39 && i < 60){
                     white = Instantiate(white, new Vector3(i,0,j),Quaternion.identity);
                     grid[i,j] = new Node(false,i,j);
-                    if(j == 60) {
+                    grid[i, j].reward = -0.4f;
+                    if (j == 60) {
                         NS[nCount] = white;
                         consult[dCount] = grid[i,j];
                         nCount++;
@@ -45,9 +47,12 @@ public class TrafficBoard : MonoBehaviour
                 }else if(i >= 60 && j > 39 && j  < 60) {
                     white = Instantiate(white, new Vector3(i,0,j),Quaternion.identity);
                     grid[i,j] = new Node(false,i,j);
-                }else {
+                    grid[i, j].reward = -0.4f;
+                }
+                else {
                     black = Instantiate(black, new Vector3(i,0,j),Quaternion.identity);
                     grid[i,j] = new Node(true,i,j);
+                    grid[i, j].reward = -10f;
                 }
             }
         }

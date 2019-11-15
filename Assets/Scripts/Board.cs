@@ -10,6 +10,7 @@ public class Board : MonoBehaviour
     public Node goalNode;
     public List<Node> path;
     private Material mMat;
+    public float reward;
     // Start is called before the first frame update
     void Awake()
     {

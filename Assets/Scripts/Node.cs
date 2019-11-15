@@ -10,6 +10,9 @@ public class Node
     //G stands for the acumulated move cost
     public int posX, posY;
     public double gValue, hValue, fValue;
+    public double reward;
+    public int direccion;
+    public string dir;
 
     public Node parent;
 
