@@ -5,14 +5,14 @@ using System;
 
 public class MDP : MonoBehaviour
 {
-    public Node startNode, goalNode, currentNode;
+    public Node currentNode;
     private TrafficBoard t;
     private double gama = 0.8f;
     private double move = 0.9f;
     private double residium = 0.1f;
     public double value, sum, max, convSum;
     private bool stay, convergence;
-    private int count;
+    private int count, laps;
     private Node[] directions = new Node[9]; //0-LUp,1-L,2-LD,3-Up,4-C,5-D,6-RUp,7-R,8-RD
     private double[] values = new double[9];
 
@@ -23,34 +23,40 @@ public class MDP : MonoBehaviour
         convergence = false;
 
         while (convergence == false) {
+            convSum = 0;
             Node[,] newState = new Node[100, 100];
-            for (int x = 0; x <= t.grid.Length; x++)
+            for (int x = 0; x < 99; x++)
             {
-                for (int y = 0; y <= t.grid.Length; y++)
+                for (int y = 0; y < 99; y++)
                 {
                     currentNode = t.grid[x, y];
 
-                    newState[x,y] = MDPSolver(x,y,newState[x,y]);
+                    //newState[x, y] = new Node(currentNode.isWall,currentNode.posX,currentNode.posY);
+
+                    newState[x,y] = MDPSolver(x,y);
                 }
             }
 
-            for (int x = 0; x <= t.grid.Length; x++)
+            Debug.Log("Andres");
+
+            for (int x = 0; x < 99; x++)
             {
-                for (int y = 0; y <= t.grid.Length; y++)
+                for (int y = 0; y < 99; y++)
                 {
                     convSum += t.grid[x, y].reward - newState[x, y].reward;
                 }
             }
 
-            if (convSum == 0)
+            if (convSum == 0f || laps == 1)
             {
+                Debug.Log(laps);
                 convergence = true;
             }
             else {
-
-                for (int x = 0; x <= t.grid.Length; x++)
+                laps++;
+                for (int x = 0; x < 99; x++)
                 {
-                    for (int y = 0; y <= t.grid.Length; y++)
+                    for (int y = 0; y < 99; y++)
                     {
                         t.grid[x, y] = newState[x, y];
                     }
@@ -58,12 +64,14 @@ public class MDP : MonoBehaviour
             }
             
         }
-
-        
     }
 
-    public Node MDPSolver(int x, int y, Node newStateNode)
+    public Node MDPSolver(int x, int y)
     {
+        count = 0;
+        value = 0;
+
+        Node newStateNode = new Node(currentNode.isWall,x,y);
 
         FindNeighbours(currentNode);
         double div = residium / count;
@@ -73,25 +81,32 @@ public class MDP : MonoBehaviour
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 //LD,L,LU,D,U,RD,R,RU,S
-                if (i == j)
+
+                if (i == j) //En caso de estar en la casilla diagonal
                 {
+                    //No tener valor, stay
                     if (directions[j] == null)
                     {
                         stay = true;
                         continue;
                     }
+
+                    //Prob * reward
                     value = move * directions[j].reward;
                 }
                 else {
+                    //Si estamos en STAY y diagonal sin valor
                     if (j == 8 && stay == true)
                     {
                         stay = false;
+                        //Prob * reward de stay
                         value = move * directions[j].reward;
                     }
                     else {
                         if (directions[j] == null) {
                             continue;
                         }
+                        //Residuo * reward
                         value = div * directions[j].reward;
                     }
                 }
@@ -106,6 +121,7 @@ public class MDP : MonoBehaviour
         max = values.Max();
 
         int maxPos = Array.IndexOf(values,max);
+
         
         switch (maxPos) {
             case (0):
@@ -137,6 +153,9 @@ public class MDP : MonoBehaviour
                 break;
 
         }
+
+        newStateNode.reward = max;
+        Debug.Log(newStateNode.dir);
 
         return newStateNode;
         

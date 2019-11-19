@@ -56,6 +56,17 @@ public class TrafficBoard : MonoBehaviour
                 }
             }
         }
+
+        SetGoals();
+    }
+
+    void SetGoals() {
+        for (int i = 40; i < 60; i++) {
+            grid[i, 0].reward = 10;
+            grid[98, i].reward = 10;
+        }
+
+        
     }
 
     public List<Node> FindNeighbours(Node n) {
